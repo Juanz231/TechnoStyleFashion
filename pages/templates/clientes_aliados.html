@@ -76,64 +76,27 @@
 
 <div class="container my-5">
   <div class="row">
-    {% for ropa in ropas %}
+    {% for cliente in clientes %}
     <div class="col-md-4 col-lg-3 mb-4">
       <div class="card h-100">
-        <img src="{{ ropa.image_url }}" class="card-img-top img-card" alt="{{ ropa.Titulo }}">
+        <img src="https://th.bing.com/th/id/OIP.aM_GVBT8wDyJc8EuPu3zbAHaHa?rs=1&pid=ImgDetMain" class="card-img-top img-card" alt="cliente">
         <div class="card-body text-center">
-          <a href="{% url 'show' id=ropa.id %}" class="btn">{{ ropa.Titulo }}</a>
-          <p class="price">{{ ropa.precio|intcomma }} $</p>
+          <a href="" class="btn">{{ cliente.nombre }}</a>
+          <p class="price">Productos: </p>
+          <br>
+            {% for producto in cliente.productos %}
+            <p class="price">{{ producto.nombre }}</p>
+            <p class="price">{{ producto.talla }} </p>
+            </p>
+            <p class="price">{{ producto.precio }}</p>
+            -----------------------------------------
+            {% endfor %}
         </div>
       </div>
     </div>
     {% endfor %}
   </div>
 
-  {% if user.is_authenticated %}
-  <a href="{% url 'ropa_create' %}" class="floating-btn">{% trans "Subir prenda" %}</a>
-  {% endif %}
 </div>
 {% endblock %}
-
-{% block footer %}
-<style>
-  .footer {
-    background-color: #ffd7e0; /* Color rojo pastel más claro */
-    color: #151515;
-    padding: 20px 0;
-    border-top-left-radius: 10px; /* Bordes redondeados */
-    border-top-right-radius: 10px;
-  }
-
-  .text-grey {
-    color: #151515;
-  }
-
-  .post-text-box {
-    margin-top: 10px;
-  }
-
-  .post-text-box a {
-    color: #151515;
-  }
-
-  .post-text-box a:hover {
-    color: #c73659;
-  }
-</style>
-<div class="footer text-center">
-  <div class="container">
-    <small>
-      {% trans 'Diseñado por:' %} - 
-      <a class="text-reset fw-bold text-decoration-none" target="_blank">Juan Diego Lopez Guisao</a>
-      <div class="post-text-box">
-        <a class="text-reset fw-bold text-decoration-none" target="_blank">Daniel Alejandro Parra</a>
-      </div>
-      <div class="post-text-box">
-        <a class="text-reset fw-bold text-decoration-none" target="_blank">Melisa Rua Henao</a>
-      </div>
-    </small>
-  </div>
-</div>
-{% endblock %}
-{% comment %} Diseñado por Juan Diego Lopez Guisao y Daniel Alejandro Parra {% endcomment %}
+{% comment %} Diseñado por Melisa Rua Henao y Daniel Alejandro Parra {% endcomment %}

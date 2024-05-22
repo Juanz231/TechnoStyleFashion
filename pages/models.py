@@ -25,13 +25,6 @@ class Regalo(models.Model):
         return self.titulo_nota
     
 
-class Review(models.Model):
-    Titulo_Review = models.CharField(max_length = 100)
-    Contenido_Review = models.TextField()
-    Fecha_Review = models.DateTimeField()
-
-
-
 class CustomUser(AbstractUser):
     TIPO_USUARIO_CHOICES = [
         ('Tienda', 'Tienda'),
@@ -54,9 +47,4 @@ class CustomUser(AbstractUser):
         related_name='customuser_set',
         related_query_name='user'
     )
-    
-class Recordatorio(models.Model):
-    titulo = models.CharField(max_length = 40)
-    nota_adicional = models.TextField()
-    fecha = models.DateTimeField()
     

@@ -1,7 +1,6 @@
-#programado por: Andres Rua
 from django.urls import path, include
 from .views import *
-payment_service = checkPayment()  # Reemplaza esto con tu servicio de pago real
+payment_service = checkPayment()
 pdf_service = PDFGenerator()
 
 
@@ -24,10 +23,6 @@ urlpatterns = [
     path('regalos/<str:id>', RegaloShowView.as_view(), name='regalo_show'),
     path('regalos/<int:id>/delete/', RegaloDeleteView.as_view(), name='regalo_delete'),
 
-    path('reviews/', ReviewIndexView.as_view(), name='misreviews'),
-    path('reviews/create', ReviewCreateView.as_view(), name='forreview'),
-    path('reviews/<str:id>', ReviewShowView.as_view(), name='reviews'),
-    path('reviews/<int:id>/delete/', ReviewDeleteView.as_view(), name='review_delete'),  
 
     path('cart/', CartView.as_view(), name='cart_index'),
     path('cart/add/<str:ropa_id>', CartView.as_view(), name='cart_add'),
@@ -35,6 +30,9 @@ urlpatterns = [
     path('finalizar-compra/', FinalizarCompraView.as_view(), name='finalizar_compra'),
     path('download-pdf/', download_pdf, name='download_pdf'),
 
+    
+    path('divisas/', CurrencyView.as_view(), name='divisas'),
+    path('aliados/', ClientesAliados.as_view(), name='clientes_aliados'),
     path('api/json/', lista_productos, name='lista_productos_json'),
     path('check/', mostrar_cheque, name = 'check'),
 ]

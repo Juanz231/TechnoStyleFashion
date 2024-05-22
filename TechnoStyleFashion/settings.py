@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-+#sl3ei&6p#7b#ti)n#k@!&7zlc-9-g0!#1ytg@b5jx-us$)^i
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['34.170.152.87']
+ALLOWED_HOSTS = ['34.170.152.87', '127.0.0.1']
 AUTH_USER_MODEL = 'pages.CustomUser'
 
 # Application definition

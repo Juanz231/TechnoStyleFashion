@@ -1,4 +1,3 @@
-#programado por: Juan Pavas, Andres Rua, Jose Valencia
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import TemplateView, ListView
@@ -7,8 +6,8 @@ from django.http import HttpResponseRedirect, HttpResponseNotFound
 from django.urls import reverse
 from django import forms
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
-from .models import Ropa, Regalo, Review, CustomUser
-from django .contrib import messages
+from .models import Ropa, Regalo, CustomUser
+from django.contrib import messages
 from django.http import JsonResponse
 from django.urls import reverse_lazy
 from reportlab.lib.pagesizes import letter
@@ -21,19 +20,13 @@ from random import choice
 from django.urls import reverse
 from django.contrib.auth import authenticate, login
 
-#verificación de admin
 from django.contrib.auth.decorators import user_passes_test
 from django.http import HttpResponse
 from django.contrib.auth.views import LogoutView
-#signup
-from django.contrib.auth import authenticate, login
 from .forms import CustomUserCreationForm, LoginForm, RopaForm, RegaloForm
 from django.contrib.auth.forms import AuthenticationForm
-
-#translation
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
-
 from django.http import FileResponse
 from django.conf import settings
 import os
@@ -113,7 +106,7 @@ class RopaCreateView(View):
 class RopaListView(ListView):
     model = Ropa
     template_name = 'ropa/index.html'
-    context_object_name = 'ropas'  # This will allow you to loop through 'products' in your template
+    context_object_name = 'ropas' 
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -121,12 +114,44 @@ class RopaListView(ListView):
         context['subtitle'] = _('Lista de prendas')
         return context   
 
+
+
 class RopaDeleteView(View):
     def get(self, request, id):
         ropa = get_object_or_404(Ropa, pk=id)
         ropa.delete()
         return redirect('ropa_index') 
-    
+
+class ClientesAliados(View):
+    template_name = 'clientes_aliados.html'
+
+    def get(self, request):
+        try:
+            url = "http://35.238.42.183:8000/clientes"
+            response = requests.get(url)
+            data = response.json()
+        except:
+            data = [{'nombre_cliente': 'Juan', 'productos': [{'nombre': 'Camisa', 'talla': 'M', 'precio': 50000}, {'nombre': 'Pantalon', 'talla': 'S', 'precio': 70000}]}, {'nombre_cliente': 'Andres', 'productos': [{'nombre': 'Camisa', 'talla': 'M', 'precio': 50000}, {'nombre': 'Pantalon', 'talla': 'S', 'precio': 70000}]}, {'nombre_cliente': 'Jose', 'productos': [{'nombre': 'Camisa', 'talla': 'M', 'precio': 50000}, {'nombre': 'Pantalon', 'talla': 'S', 'precio': 70000}]}]
+        clientes = []
+        for client in data:
+            cliente = {
+                'nombre': client['nombre_cliente'],
+                'productos': []
+            }
+            productos = client['productos']
+            for producto in productos:
+                producto_info = {
+                    'nombre': producto['nombre'],
+                    'talla': producto['talla'],
+                    'precio': producto['precio']
+                }
+                cliente['productos'].append(producto_info)
+            clientes.append(cliente)
+        viewdata = {}
+        viewdata["title"] = _("Clientes Aliados")
+        viewdata["subtitle"] = _("Clientes Aliados")
+        viewdata["clientes"] = clientes
+        return render(request, self.template_name, viewdata)
 
 class RegaloIndexView(View):
     template_name = 'regalos/index.html'
@@ -196,92 +221,11 @@ class RegaloListView(ListView):
         return context
 """
 
-
-
-
 class RegaloDeleteView(View):
     def get(self, request, id):
         regalo = get_object_or_404(Regalo, pk=id)
         regalo.delete()
         return redirect('regalos') 
-    
-
-class ReviewIndexView(View):
-    template_name = 'reviews/index.html'
-
-    def get(self, request):
-        viewData = {}
-        viewData["title"] = _("Mis Reviews")
-        viewData["subtitle"] = _("Reviews")
-        viewData["reviews"] = Review.objects.all()
-
-        return render (request, self.template_name, viewData)
-
-class ReviewShowView(View):
-    template_name = 'reviews/show.html'
-
-    def get(self, request, id):
-        try:
-            review_id = int(id)
-            if review_id < 1:
-                raise ValueError(_("El id de la review debe ser mayor a 1"))
-            review = get_object_or_404(Review, pk=review_id)
-        except (ValueError, IndexError):
-            return HttpResponseRedirect (reverse('home'))
-        
-        viewData = {}
-        review = get_object_or_404(Review, pk=review_id)
-        viewData["title"] = _("Mis reviews - ") + review.Titulo_Review
-        viewData["subtitle"] = _("Reviews - ") + review.Titulo_Review
-        viewData["review"] = review
-
-        return render (request, self.template_name, viewData)
-
-    
-class ReviewForm(forms.ModelForm):
-    class Meta:
-        model = Review
-        fields = ['Titulo_Review','Contenido_Review', 'Fecha_Review']
-
-
-class ReviewCreateView(View):
-    template_name = 'reviews/create.html'
-
-    def get(self, request):
-        form = ReviewForm()
-        viewData = {}
-        viewData["title"] = _("Crear Review")
-        viewData["form"] = form
-        return render(request, self.template_name, viewData)
-
-    def post(self, request):
-        form = ReviewForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('misreviews')
-
-        else:
-            viewData = {}
-            viewData["title"] = _("Crear Review")
-            viewData["form"] = form
-        return render(request, self.template_name, viewData)
-    
-class ReviewListView(ListView):
-    model = Review
-    template_name = 'review_list.html'
-    context_object_name = 'reviews'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['title'] = _('Review - Tienda en línea')
-        context['subtitle'] = _('Lista de Reviews')
-        return context  
-
-class ReviewDeleteView(View):
-    def get(self, request, id):
-        review = get_object_or_404(Review, pk=id)
-        review.delete()
-        return redirect('misreviews')
 
 
 class CartView(View):
@@ -347,8 +291,9 @@ class checkPayment(Payment):
     
 class PDFGenerator:
     def pdf(self, data):
-        pdf_filename = "cart_payment.pdf"
-        c = canvas.Canvas(pdf_filename, pagesize=letter)
+        pdf_filename = _("factura_compra.pdf")
+        real_pdf_filename = pdf_filename.encode('ascii', 'ignore').decode('ascii')
+        c = canvas.Canvas(real_pdf_filename, pagesize=letter)
 
         y_position = 750  # Bajar todo un poco
         total_precio = 0  # Para calcular el precio total
@@ -419,6 +364,41 @@ class PDFGenerator:
         c.save()
         return pdf_filename
 
+class CurrencyView(View):
+    template_name = 'divisas.html'
+    def get(self, request):
+        import requests
+        from requests.auth import HTTPBasicAuth
+
+        url = "https://xecdapi.xe.com/v1/convert_from.json/"
+        params = {
+                'from': 'COP',
+                'to': 'USD,EUR,CAD,JPY,GBP,AUD',
+                'amount': 1,
+                'decimal_places': 10,
+        }   
+        response = requests.get(url, auth=HTTPBasicAuth('universidadeafit264812278', 'opsa8lrhl8v73an28jg771jvop'), params=params)
+        
+        data = response.json()
+
+        from_currency = data['from']
+        to_currencies = data['to']
+        USD_conversion = to_currencies[5]
+        EUR_conversion = to_currencies[2]
+        CAD_conversion = to_currencies[1]
+        JPY_conversion = to_currencies[4]
+        GBP_conversion = to_currencies[3]
+        AUD_conversion = to_currencies[0]
+        
+        conversions = [USD_conversion, EUR_conversion, CAD_conversion, JPY_conversion, GBP_conversion, AUD_conversion]
+        
+        viewdata = {}
+        viewdata["title"] = _("Divisas")
+        viewdata["subtitle"] = _("Divisas - Conversion")
+        viewdata["divisas"] = conversions
+        return render(request, self.template_name, viewdata)
+    
+    
 
 def mostrar_cheque(request, Ropa_Titulo=None):
     check_service = checkPayment()
